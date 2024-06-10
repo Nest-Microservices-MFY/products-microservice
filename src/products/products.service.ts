@@ -1,9 +1,5 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  OnModuleInit,
-} from '@nestjs/common';
+import { HttpStatus, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { PrismaClient } from '@prisma/client';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -30,9 +26,10 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     const lastPage = Math.ceil(totalRecords / limit);
 
     if (page > lastPage) {
-      throw new NotFoundException(
-        `Page ${page} not exist, last page is ${lastPage}`,
-      );
+      throw new RpcException({
+        message: `Page ${page} not exist, last page is ${lastPage}`,
+        status: HttpStatus.NOT_FOUND,
+      });
     }
 
     return {
@@ -60,9 +57,10 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     const lastPage = Math.ceil(totalRecords / limit);
 
     if (page > lastPage) {
-      throw new NotFoundException(
-        `Page ${page} not exist, last page is ${lastPage}`,
-      );
+      throw new RpcException({
+        message: `Page ${page} not exist, last page is ${lastPage}`,
+        status: HttpStatus.NOT_FOUND,
+      });
     }
 
     return {
@@ -90,7 +88,10 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     });
 
     if (!product) {
-      throw new NotFoundException(`Product with id: ${id} not found`);
+      throw new RpcException({
+        message: `Product with id: ${id} not found`,
+        status: HttpStatus.BAD_REQUEST,
+      });
     }
 
     return product;
