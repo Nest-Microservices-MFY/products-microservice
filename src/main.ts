@@ -5,17 +5,17 @@ import { AppModule } from './app.module';
 import { envs } from './config';
 
 async function bootstrap() {
+  const logger = new Logger('Products-MS');
+  console.log(envs.natsServers);
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
-      transport: Transport.TCP,
+      transport: Transport.NATS,
       options: {
-        port: envs.port,
-        retryAttempts: 5,
+        servers: envs.natsServers,
       },
     },
   );
-  const logger = new Logger('Products-MS');
 
   app.useGlobalPipes(
     new ValidationPipe({
